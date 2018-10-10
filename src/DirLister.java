@@ -10,18 +10,11 @@ public class DirLister
         File actual = new File(_root);
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(_root);
         DefaultTreeModel tm = new DefaultTreeModel(root);
-        for (File f : actual.listFiles())
-        {
-            if (f.isDirectory())
-            {
-                DefaultMutableTreeNode subroot = new DefaultMutableTreeNode(f.getName() + "\\");
-                tm.insertNodeInto(subroot, root, root.getChildCount());
-            }
-        }
+        updNode(tm, root, _root);
         return tm;
     }
 
-    public static DefaultMutableTreeNode updNode (DefaultTreeModel tm,
+    public static void updNode (DefaultTreeModel tm,
                                                   DefaultMutableTreeNode rootNode,
                                                   String rootPath)
     {
@@ -35,6 +28,5 @@ public class DirLister
                 tm.insertNodeInto(child, rootNode, rootNode.getChildCount());
             }
         }
-        return rootNode;
     }
 }
