@@ -1,14 +1,24 @@
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 
 public class WTMain
 {
     private JPanel mainPanel;
     private JTree tree1;
     private JTable table1;
+    private JLabel topLabel;
+
+    private Clip lastClip;
 
     public WTMain ()
     {
@@ -23,23 +33,68 @@ public class WTMain
             }
             TreePath tp = e.getPath();
 
-            String s = tp.toString()
+            String path = tp.toString()
                     .replace(", ", "")
                     .replace("[", "")
                     .replace("]", "");
-            System.out.println(s);
 
-            DirLister.updNode(tm, node, s);
+            DirLister.getNodeEntry(tm, node, path);
             tree1.expandPath(tp);
+
+            updateTable(path);
         });
+        table1.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked (MouseEvent e)
+            {
+                int i = table1.getSelectedRow();
+                TableModel tm = table1.getModel();
+                String path = topLabel.getText() + (String) tm.getValueAt(i, 0);
+                //System.out.println(path);
+                playWav(path);
+            }
+        });
+    }
+
+    public void playWav (String filename)
+    {
+        if (lastClip != null)
+        {
+            lastClip.stop();
+        }
+        try
+        {
+            Clip clip = AudioSystem.getClip();
+            lastClip = clip;
+            clip.open(AudioSystem.getAudioInputStream(new File(filename)));
+            clip.start();
+        }
+        catch (Exception exc)
+        {
+            exc.printStackTrace(System.out);
+        }
+    }
+
+    private void updateTable (String path)
+    {
+        DefaultTableModel tab = DirLister.popTable(path);
+        table1.setModel(tab);
+        topLabel.setText(path);
+    }
+
+    private void updateUI (String path)
+    {
+        DefaultTreeModel tm = DirLister.getRootEntry(path);
+        tree1.setModel(tm);
+        updateTable(path);
     }
 
     public static void main (String[] args)
     {
         JFrame frame = new JFrame("WTMain");
-        DefaultTreeModel tm = DirLister.doIt("c:\\");
         WTMain wt = new WTMain();
-        wt.tree1.setModel(tm);
+        wt.updateUI("c:\\");
         frame.setContentPane(wt.mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -66,12 +121,20 @@ public class WTMain
         mainPanel.setLayout(new BorderLayout(0, 0));
         final JSplitPane splitPane1 = new JSplitPane();
         mainPanel.add(splitPane1, BorderLayout.CENTER);
-        table1 = new JTable();
-        splitPane1.setRightComponent(table1);
         final JScrollPane scrollPane1 = new JScrollPane();
         splitPane1.setLeftComponent(scrollPane1);
         tree1 = new JTree();
         scrollPane1.setViewportView(tree1);
+        final JScrollPane scrollPane2 = new JScrollPane();
+        splitPane1.setRightComponent(scrollPane2);
+        table1 = new JTable();
+        scrollPane2.setViewportView(table1);
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new BorderLayout(0, 0));
+        mainPanel.add(panel1, BorderLayout.NORTH);
+        topLabel = new JLabel();
+        topLabel.setText("Label");
+        panel1.add(topLabel, BorderLayout.CENTER);
     }
 
     /**

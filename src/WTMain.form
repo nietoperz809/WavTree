@@ -12,12 +12,6 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="c8ee0" class="javax.swing.JTable" binding="table1" default-binding="true">
-            <constraints>
-              <splitpane position="right"/>
-            </constraints>
-            <properties/>
-          </component>
           <scrollpane id="ecf2">
             <constraints>
               <splitpane position="left"/>
@@ -31,8 +25,34 @@
               </component>
             </children>
           </scrollpane>
+          <scrollpane id="cc87a">
+            <constraints>
+              <splitpane position="right"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="c8ee0" class="javax.swing.JTable" binding="table1" default-binding="true">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </scrollpane>
         </children>
       </splitpane>
+      <grid id="1f4ac" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="956e2" class="javax.swing.JLabel" binding="topLabel">
+            <constraints border-constraint="Center"/>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>
