@@ -1,27 +1,76 @@
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import hexeditor.HexView;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.sort.TableSortController;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Comparator;
 
 public class WTMain
 {
     private JPanel mainPanel;
     private JTree tree1;
-    private JTable table1;
+    private JXTable table1;
     private JLabel topLabel;
+    private JButton copyPathButton;
 
-    private Clip lastClip;
+    int[] dummy = new int[256];
+    private HexView hexView = new HexView(dummy);
+    final JScrollPane scP = new JScrollPane();
+
+    private MediaPlayer lastClip;
+
+    final static JFXPanel fxPanel = new JFXPanel(); // start JFX
+
+    /**
+     * Tree path to string
+     *
+     * @param tp TreePath object
+     * @return String representation (Components separated by \)
+     */
+    public String TPtoString (TreePath tp)
+    {
+        StringBuffer tempSpot = new StringBuffer();
+
+        for (int counter = 0, maxCounter = tp.getPathCount(); counter < maxCounter;
+             counter++)
+        {
+            tempSpot.append(tp.getPathComponent(counter));
+        }
+        return tempSpot.toString();
+    }
 
     public WTMain ()
     {
+        // set Colors of JTree
+        tree1.setBackground(Color.black);
+        TreeCellRenderer cr = tree1.getCellRenderer();
+        if (cr instanceof DefaultTreeCellRenderer)
+        {
+            DefaultTreeCellRenderer dtcr =
+                    (DefaultTreeCellRenderer) cr;
+
+            // Set the various colors
+            dtcr.setBackgroundNonSelectionColor(Color.black);
+            dtcr.setBackgroundSelectionColor(Color.gray);
+            dtcr.setTextSelectionColor(Color.white);
+            dtcr.setTextNonSelectionColor(Color.green);
+
+            // Finally, set the tree's background color
+            tree1.setBackground(Color.black);
+        }
+        // Tree selection listener
         tree1.addTreeSelectionListener(e ->
         {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -33,16 +82,16 @@ public class WTMain
             }
             TreePath tp = e.getPath();
 
-            String path = tp.toString()
-                    .replace(", ", "")
-                    .replace("[", "")
-                    .replace("]", "");
+            String path = TPtoString(tp);
+
+            System.out.println(path);
 
             DirLister.getNodeEntry(tm, node, path);
             tree1.expandPath(tp);
 
             updateTable(path);
         });
+        // Table click listener
         table1.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -51,9 +100,33 @@ public class WTMain
                 int i = table1.getSelectedRow();
                 TableModel tm = table1.getModel();
                 String path = topLabel.getText() + (String) tm.getValueAt(i, 0);
-                //System.out.println(path);
-                playWav(path);
+
+                if (e.getButton() == MouseEvent.BUTTON3) // Right click
+                {
+                    JPopupMenu menu = new JPopupMenu();
+                    JMenuItem item = new JMenuItem("Copy full path");
+                    item.addActionListener(e1 ->
+                    {
+                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clipboard.setContents(new StringSelection(path), null);
+                    });
+                    menu.add(item);
+                    menu.show(e.getComponent(), e.getX(), e.getY());
+                }
+                else
+                {
+                    hexView.readfirstBytes(path, 256);
+                    //scP.getViewport().setViewPosition(new Point(0,0));
+                    if (path.endsWith(".wav") || path.endsWith(".mp3"))
+                        playWav(path);
+                }
             }
+        });
+        // Copy Path to clipboard
+        copyPathButton.addActionListener(e ->
+        {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(new StringSelection(topLabel.getText()), null);
         });
     }
 
@@ -63,17 +136,10 @@ public class WTMain
         {
             lastClip.stop();
         }
-        try
-        {
-            Clip clip = AudioSystem.getClip();
-            lastClip = clip;
-            clip.open(AudioSystem.getAudioInputStream(new File(filename)));
-            clip.start();
-        }
-        catch (Exception exc)
-        {
-            exc.printStackTrace(System.out);
-        }
+        Media hit = new Media(new File(filename).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(hit);
+        lastClip = mediaPlayer;
+        mediaPlayer.play();
     }
 
     private void updateTable (String path)
@@ -81,6 +147,10 @@ public class WTMain
         DefaultTableModel tab = DirLister.popTable(path);
         table1.setModel(tab);
         topLabel.setText(path);
+        // Set table long comparator for size column
+        TableSortController con = (TableSortController) table1.getRowSorter();
+        con.setComparator(1, (Comparator<String>) (o1, o2) ->
+                (int)Math.signum(Long.parseLong(o1) - Long.parseLong(o2)));
     }
 
     private void updateUI (String path)
@@ -105,7 +175,7 @@ public class WTMain
 // GUI initializer generated by IntelliJ IDEA GUI Designer
 // >>> IMPORTANT!! <<<
 // DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
+        setupUI();
     }
 
     /**
@@ -115,27 +185,44 @@ public class WTMain
      *
      * @noinspection ALL
      */
-    private void $$$setupUI$$$ ()
+    private void setupUI ()
     {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(0, 0));
         final JSplitPane splitPane1 = new JSplitPane();
+        splitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+        final JSplitPane sp3 = new JSplitPane();
+        splitPane1.setLeftComponent(sp3);
+
+        hexView.setBackground(new java.awt.Color(0, 102, 102));
+        hexView.setColumns(20);
+        hexView.setFont(new java.awt.Font("Lucida Console", 1, 10)); // NOI18N
+        hexView.setForeground(new java.awt.Color(255, 255, 102));
+        hexView.setRows(5);
+        scP.setViewportView(hexView);
+        splitPane1.setRightComponent(scP);
+
+
         mainPanel.add(splitPane1, BorderLayout.CENTER);
         final JScrollPane scrollPane1 = new JScrollPane();
-        splitPane1.setLeftComponent(scrollPane1);
+        sp3.setLeftComponent(scrollPane1);
         tree1 = new JTree();
         scrollPane1.setViewportView(tree1);
         final JScrollPane scrollPane2 = new JScrollPane();
-        splitPane1.setRightComponent(scrollPane2);
-        table1 = new JTable();
+        sp3.setRightComponent(scrollPane2);
+        table1 = new JXTable();
         scrollPane2.setViewportView(table1);
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new BorderLayout(0, 0));
+        panel1.setLayout(new FlowLayout());
         mainPanel.add(panel1, BorderLayout.NORTH);
         topLabel = new JLabel();
-        topLabel.setText("Label");
-        panel1.add(topLabel, BorderLayout.CENTER);
+        panel1.add(topLabel);
+        copyPathButton = new JButton();
+        copyPathButton.setText("Copy path");
+        panel1.add(copyPathButton);
     }
+
 
     /**
      * @noinspection ALL

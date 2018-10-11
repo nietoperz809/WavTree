@@ -40,17 +40,24 @@ public class DirLister
                                      DefaultMutableTreeNode rootNode,
                                      String rootPath)
     {
-        rootNode.removeAllChildren();
-        File actual = new File(rootPath);
-        for (File f : Objects.requireNonNull(actual.listFiles()))
+        try
         {
-            if (f.isDirectory())
+            rootNode.removeAllChildren();
+            File actual = new File(rootPath);
+            for (File f : Objects.requireNonNull(actual.listFiles()))
             {
-                DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName() + "\\");
-                tm.insertNodeInto(child, rootNode, rootNode.getChildCount());
+                if (f.isDirectory())
+                {
+                    DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName() + "\\");
+                    tm.insertNodeInto(child, rootNode, rootNode.getChildCount());
+                }
             }
+            tm.reload(rootNode);
         }
-        tm.reload(rootNode);
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
     }
 
 }
