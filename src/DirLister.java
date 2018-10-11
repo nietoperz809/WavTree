@@ -17,12 +17,19 @@ public class DirLister
         columns.add("Size");
 
         File actual = new File(rootPath);
-        for (File f : Objects.requireNonNull(actual.listFiles()))
+        try
         {
-            if (f.isFile())
+            for (File f : Objects.requireNonNull(actual.listFiles()))
             {
-                values.add (new String[]{f.getName(), ""+f.length()});
+                if (f.isFile())
+                {
+                    values.add (new String[]{f.getName(), ""+f.length()});
+                }
             }
+        }
+        catch (Exception e)
+        {
+            System.out.println("popTable fail");
         }
         return new DefaultTableModel (values.toArray(new Object[][] {}),
                                         columns.toArray());
