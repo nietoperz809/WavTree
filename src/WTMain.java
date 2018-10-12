@@ -130,6 +130,10 @@ public class WTMain
                     {
                         playWav(path);
                     }
+                    else if (lower.endsWith(".ogg"))
+                    {
+                        new OggPlayer().play(path);
+                    }
                 }
             }
         });
