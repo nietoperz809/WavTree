@@ -9,5 +9,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.swinglabs:swingx:1.6.1" level="project" />
     <orderEntry type="library" name="jl1.0.1" level="project" />
+    <orderEntry type="library" name="jogg-0.0.7" level="project" />
+    <orderEntry type="library" name="jorbis-0.0.15" level="project" />
+    <orderEntry type="library" name="mp3spi1.9.5" level="project" />
+    <orderEntry type="library" name="tritonus_share" level="project" />
+    <orderEntry type="library" name="vorbisspi1.0.3" level="project" />
   </component>
 </module>

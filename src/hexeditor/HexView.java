@@ -322,7 +322,9 @@ public class HexView extends JTextArea
             }
             sb.append('\n');
         }
-        sb.deleteCharAt(sb.length() - 1);
+        int chardel = sb.length() - 1;
+        if (chardel >= 0)
+            sb.deleteCharAt(chardel);
         this.setText(sb.toString());
     }
 }

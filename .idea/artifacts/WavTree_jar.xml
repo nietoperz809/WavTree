@@ -6,6 +6,9 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/swinglabs/swingx/1.6.1/swingx-1.6.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/jhlabs/filters/2.0.235/filters-2.0.235.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/swinglabs/swing-worker/1.1/swing-worker-1.1.jar" path-in-jar="/" />
+      <element id="directory" name="lib">
+        <element id="dir-copy" path="$PROJECT_DIR$/lib" />
+      </element>
     </root>
   </artifact>
 </component>

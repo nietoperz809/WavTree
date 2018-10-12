@@ -1,3 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: WTMain
+Class-Path: lib/jl1.0.1.jar lib/jogg-0.0.7.jar lib/jorbis-0.0.15.jar l
+ ib/mp3spi1.9.5.jar lib/tritonus_share.jar lib/vorbisspi1.0.3.jar
+Main-Class: Launcher
 
