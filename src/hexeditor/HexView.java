@@ -223,7 +223,7 @@ public class HexView extends JTextArea
      * Constructor
      * @param mem Memory block to be displayed
      */
-    public HexView(int[] mem)
+    public HexView(/*int[] mem*/)
     {
         super();
         this.setDoubleBuffered(true);
@@ -248,9 +248,8 @@ public class HexView extends JTextArea
         this.addKeyListener(keyListener);
         this.setDocument(plainDoc);
 
-        memory = mem;
-
-        populate();
+//        memory = mem;
+//        populate();
     }
 
     /**

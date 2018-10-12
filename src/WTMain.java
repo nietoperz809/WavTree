@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class WTMain
@@ -27,10 +28,11 @@ public class WTMain
     private JButton copyPathButton;
 
     private String root;
+    private String audacityPath = "audacity.exe";
 
-    private int[] dummy = new int[256];
-    private HexView hexView = new HexView(dummy);
-    private final JScrollPane scP = new JScrollPane();
+    //private int[] dummy = new int[256];
+    private HexView hexView = new HexView(/*dummy*/);
+    //private final JScrollPane hexViewScrollPane = new JScrollPane();
 
     private MediaPlayer lastClip;
 
@@ -116,11 +118,31 @@ public class WTMain
                         clipboard.setContents(new StringSelection(path), null);
                     });
                     menu.add(item);
+
+                    item = new JMenuItem("Open with Audacity");
+                    item.addActionListener(e1 ->
+                    {
+                        ArrayList<String> args = new ArrayList<>();
+                        args.add (audacityPath); // command name
+                        args.add (path); // optional args added as separate list items
+                        ProcessBuilder pb = new ProcessBuilder (args);
+                        try
+                        {
+                            Process p = pb.start();
+                        }
+                        catch (IOException e2)
+                        {
+                            System.out.println("cannot start audacity");
+                        }
+                    });
+                    menu.add(item);
+
                     menu.show(e.getComponent(), e.getX(), e.getY());
                 }
                 else
                 {
-                    hexView.readfirstBytes(path, 256);
+                    hexView.readfirstBytes(path, 64);
+                    //hexViewScrollPane.getVerticalScrollBar().setVisible(false);
                     String lower = path.toLowerCase();
                     if (lower.endsWith(".wav")
                             || lower.endsWith(".mp3")
@@ -130,7 +152,11 @@ public class WTMain
                     {
                         playWav(path);
                     }
-                    else if (lower.endsWith(".ogg"))
+                    else if (lower.endsWith(".ogg")
+                            || lower.endsWith(".au")
+                            || lower.endsWith(".aiff")
+
+                    )
                     {
                         new OggPlayer().play(path);
                     }
@@ -187,6 +213,10 @@ public class WTMain
             {
                 wt.root = strings[0];
             });
+            conf.setAction("audacity", strings ->
+            {
+                wt.audacityPath = strings[0];
+            });
             conf.execute();
         }
         catch (IOException e)
@@ -220,12 +250,14 @@ public class WTMain
         splitPane1.setLeftComponent(sp3);
 
         hexView.setBackground(new java.awt.Color(0, 102, 102));
-        hexView.setColumns(20);
         hexView.setFont(new java.awt.Font("Lucida Console", 1, 10)); // NOI18N
         hexView.setForeground(new java.awt.Color(255, 255, 102));
-        hexView.setRows(5);
-        scP.setViewportView(hexView);
-        splitPane1.setRightComponent(scP);
+        hexView.setPreferredSize(new Dimension(100,80));
+        //hexView.setColumns(10);
+        //hexView.setRows(2);
+//        hexViewScrollPane.setViewportView(hexView);
+//        splitPane1.setRightComponent(hexViewScrollPane);
+        splitPane1.setRightComponent(hexView);
 
 
         mainPanel.add(splitPane1, BorderLayout.CENTER);
@@ -248,9 +280,6 @@ public class WTMain
     }
 
 
-    /**
-     * @noinspection ALL
-     */
     public JComponent $$$getRootComponent$$$ ()
     {
         return mainPanel;
