@@ -158,7 +158,8 @@ public class WTMain
 
                     )
                     {
-                        new OggPlayer().play(path);
+                        OggPlayer.stop();
+                        OggPlayer.asyncPlay(path);
                     }
                 }
             }

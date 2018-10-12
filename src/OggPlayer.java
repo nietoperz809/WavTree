@@ -1,8 +1,13 @@
-
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine.Info;
+import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 import static javax.sound.sampled.AudioSystem.getAudioInputStream;
@@ -11,15 +16,26 @@ import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
 public class OggPlayer
 {
-    static OggPlayer player;
+    static SourceDataLine line;
+    static ExecutorService executor = Executors.newFixedThreadPool(10);
 
-    public static void main(String[] args)
+//    public static void main(String[] args)
+//    {
+//        player = new OggPlayer();
+//        player.play(System.getProperty("user.dir")+ "/audiofile/001001.ogg");
+//    }
+
+    public static void asyncPlay (String path)
     {
-        player = new OggPlayer();
-        player.play(System.getProperty("user.dir")+ "/audiofile/001001.ogg");
+        final String arg = path;
+        executor.submit((Callable<Void>) () ->
+        {
+            play(arg);
+            return null;
+        });
     }
 
-    public void play(String filePath)
+    public static void play(String filePath)
     {
         final File file = new File(filePath);
 
@@ -29,38 +45,37 @@ public class OggPlayer
             final AudioFormat outFormat = getOutFormat(in.getFormat());
             final Info info = new Info(SourceDataLine.class, outFormat);
 
-            try (final SourceDataLine line =
-                         (SourceDataLine) AudioSystem.getLine(info))
-            {
-
-                if (line != null)
-                {
-                    line.open(outFormat);
-                    line.start();
-                    AudioInputStream inputMystream = AudioSystem.getAudioInputStream(outFormat, in);
-                    stream(inputMystream, line);
-                    line.drain();
-                    line.stop();
-                }
-            }
+            line = (SourceDataLine) AudioSystem.getLine(info);
+            line.open(outFormat);
+            line.start();
+            AudioInputStream inputMystream = AudioSystem.getAudioInputStream(outFormat, in);
+            stream(inputMystream, line);
 
         }
-        catch (UnsupportedAudioFileException
-                | LineUnavailableException
-                | IOException e)
+        catch (Exception e)
         {
             throw new IllegalStateException(e);
         }
     }
 
-    private AudioFormat getOutFormat(AudioFormat inFormat)
+    private static AudioFormat getOutFormat(AudioFormat inFormat)
     {
         final int ch = inFormat.getChannels();
         final float rate = inFormat.getSampleRate();
         return new AudioFormat(PCM_SIGNED, rate, 16, ch, ch * 2, rate, false);
     }
 
-    private void stream(AudioInputStream in, SourceDataLine line)
+    public static void stop()
+    {
+        if (line != null)
+        {
+            //line.drain();
+            line.stop();
+            line = null;
+        }
+    }
+
+    private static void stream(AudioInputStream in, SourceDataLine line)
             throws IOException
     {
         final byte[] buffer = new byte[4096];
