@@ -28,8 +28,10 @@ public class WTMain
     private JXTable table1;
     private JLabel topLabel;
     private JButton copyPathButton;
+    private JCheckBox onlySoundCheck;
 
     private String root;
+    private String lastPath;
     private String audacityPath = "audacity.exe";
 
     private HexView hexView = new HexView(/*dummy*/);
@@ -91,14 +93,14 @@ public class WTMain
             }
             TreePath tp = e.getPath();
 
-            String path = TPtoString(tp);
+            lastPath = TPtoString(tp);
 
-            System.out.println(path);
+            System.out.println(lastPath);
 
-            DirLister.getNodeEntry(tm, node, path);
+            DirLister.getNodeEntry(tm, node, lastPath);
             tree1.expandPath(tp);
 
-            updateTable(path);
+            updateTable(lastPath);
         });
         // Table click listener
         table1.addMouseListener(new MouseAdapter()
@@ -194,6 +196,10 @@ public class WTMain
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(new StringSelection(topLabel.getText()), null);
         });
+        onlySoundCheck.addActionListener(e ->
+        {
+            updateTable(lastPath);
+        });
     }
 
     public void playWav (String filename)
@@ -210,7 +216,7 @@ public class WTMain
 
     private void updateTable (String path)
     {
-        DefaultTableModel tab = DirLister.popTable(path);
+        DefaultTableModel tab = DirLister.popTable(path, onlySoundCheck.isSelected());
         table1.setModel(tab);
         topLabel.setText(path);
         // Set table long comparator for size column
@@ -253,6 +259,7 @@ public class WTMain
             wt.root = "c:\\";
             System.out.println("config file error");
         }
+        wt.lastPath = wt.root;
         wt.updateUI(wt.root);
 
         frame.setContentPane(wt.mainPanel);
@@ -282,12 +289,7 @@ public class WTMain
         hexView.setFont(new java.awt.Font("Lucida Console", 1, 10)); // NOI18N
         hexView.setForeground(new java.awt.Color(255, 255, 102));
         hexView.setPreferredSize(new Dimension(100,80));
-        //hexView.setColumns(10);
-        //hexView.setRows(2);
-//        hexViewScrollPane.setViewportView(hexView);
-//        splitPane1.setRightComponent(hexViewScrollPane);
         splitPane1.setRightComponent(hexView);
-
 
         mainPanel.add(splitPane1, BorderLayout.CENTER);
         final JScrollPane scrollPane1 = new JScrollPane();
@@ -303,15 +305,10 @@ public class WTMain
         mainPanel.add(panel1, BorderLayout.NORTH);
         topLabel = new JLabel();
         panel1.add(topLabel);
-        copyPathButton = new JButton();
-        copyPathButton.setText("Copy path");
+        copyPathButton = new JButton("Copy path");
+        onlySoundCheck = new JCheckBox("Only sounds");
         panel1.add(copyPathButton);
-    }
-
-
-    public JComponent $$$getRootComponent$$$ ()
-    {
-        return mainPanel;
+        panel1.add(onlySoundCheck);
     }
 }
 

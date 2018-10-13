@@ -1,3 +1,5 @@
+import org.apache.commons.io.FileUtils;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -8,18 +10,24 @@ import java.util.Objects;
 
 public class DirLister
 {
-    public static DefaultTableModel popTable (String rootPath)
+    public static final String[] extensions = new String[] { "wav", "mp3", "aac",
+            "pcm", "ogg", "au", "aiff" };
+
+    public static DefaultTableModel popTable (String rootPath, boolean onlySounds)
     {
-        List<String> columns = new ArrayList<String>();
-        List<String[]> values = new ArrayList<String[]>();
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String[]> values = new ArrayList<>();
 
         columns.add("File");
         columns.add("Size");
 
-        File actual = new File(rootPath);
+        List<File> files = (List<File>)
+                FileUtils.listFiles(new File(rootPath),
+                        onlySounds ? extensions : null,
+                        false);
         try
         {
-            for (File f : Objects.requireNonNull(actual.listFiles()))
+            for (File f : files)
             {
                 if (f.isFile())
                 {
