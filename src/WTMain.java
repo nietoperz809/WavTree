@@ -16,6 +16,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -30,9 +32,8 @@ public class WTMain
     private String root;
     private String audacityPath = "audacity.exe";
 
-    //private int[] dummy = new int[256];
     private HexView hexView = new HexView(/*dummy*/);
-    //private final JScrollPane hexViewScrollPane = new JScrollPane();
+    private String storeDir = System.getProperty("user.dir")+"\\WavStore";
 
     private MediaPlayer lastClip;
 
@@ -58,6 +59,7 @@ public class WTMain
 
     public WTMain ()
     {
+        new File(storeDir).mkdirs();
         // Build UI
         setupUI();
         // set Colors of JTree
@@ -106,11 +108,14 @@ public class WTMain
             {
                 int i = table1.convertRowIndexToModel(table1.getSelectedRow());
                 TableModel tm = table1.getModel();
-                String path = topLabel.getText() + (String) tm.getValueAt(i, 0);
+                String filename = (String) tm.getValueAt(i, 0);
+                String path = topLabel.getText() + filename;
 
                 if (e.getButton() == MouseEvent.BUTTON3) // Right click
                 {
                     JPopupMenu menu = new JPopupMenu();
+
+                    // Copy Path
                     JMenuItem item = new JMenuItem("Copy full path");
                     item.addActionListener(e1 ->
                     {
@@ -119,6 +124,7 @@ public class WTMain
                     });
                     menu.add(item);
 
+                    // Open with Audacity
                     item = new JMenuItem("Open with Audacity");
                     item.addActionListener(e1 ->
                     {
@@ -132,7 +138,25 @@ public class WTMain
                         }
                         catch (IOException e2)
                         {
-                            System.out.println("cannot start audacity");
+                            System.out.println("cannot start audacity "+e2);
+                        }
+                    });
+                    menu.add(item);
+
+                    // Copy to Store
+                    item = new JMenuItem("Copy to store");
+                    item.addActionListener(e1 ->
+                    {
+                        String dest = storeDir+"\\"+filename;
+                        try
+                        {
+                            Files.copy (new File(path).toPath(),
+                                    new File(dest).toPath(),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        }
+                        catch (IOException e2)
+                        {
+                            System.out.println("Error while copying "+e2);
                         }
                     });
                     menu.add(item);
@@ -217,6 +241,10 @@ public class WTMain
             conf.setAction("audacity", strings ->
             {
                 wt.audacityPath = strings[0];
+            });
+            conf.setAction("store", strings ->
+            {
+                wt.storeDir = strings[0];
             });
             conf.execute();
         }
