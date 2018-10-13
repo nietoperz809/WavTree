@@ -19,13 +19,15 @@ store :: C:\Users\Administrator\Desktop\song2
 --------------------------- snip --------------------------
 
 root is the root of tree. If entry doesn't exist then C:\ ist used
-audacity is the path were audacity.exe lives. If that entry doesn't
-exist then audacity integration is not available. store is the directory
-where wave files are copied if you select "store" from then context menu.
+
+audacity is the path were audacity.exe lives. If that entry doesn't exist
+then audacity integration is not available. 
+
+store is the directory where wave files are copied, if you select "store" from the context menu.
 If this entry doesn't exist, the default is the same directory as the 
 executable JAR file.
 
 Please note that the root entry ends in a backslash while the store 
 entry does not.
 
-All keywords (before the :: deliminiter) are lowercase.
+All keywords (before the :: delimiter) are lowercase.
