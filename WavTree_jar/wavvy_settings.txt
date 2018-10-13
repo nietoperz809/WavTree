@@ -1,0 +1,3 @@
+root :: C:\Users\Administrator\Desktop\audio software\
+audacity :: C:\Program Files (x86)\Audacity\audacity.exe
+store :: C:\Users\Administrator\Desktop\song2
