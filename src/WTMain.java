@@ -26,7 +26,7 @@ public class WTMain
     private JPanel mainPanel;
     private JTree tree1;
     private JXTable table1;
-    private JLabel topLabel;
+    public JLabel topLabel;
     private JButton copyPathButton;
     private JCheckBox onlySoundCheck;
 
@@ -299,6 +299,8 @@ public class WTMain
         final JScrollPane scrollPane2 = new JScrollPane();
         sp3.setRightComponent(scrollPane2);
         table1 = new JXTable();
+        table1.setDragEnabled(true);
+        table1.setTransferHandler(new FileTransferHandler(this));
         scrollPane2.setViewportView(table1);
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new FlowLayout());

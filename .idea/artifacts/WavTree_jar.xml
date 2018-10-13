@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="WavTree:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/WavTree_jar</output-path>
+    <output-path>$PROJECT_DIR$/WavTree_jar</output-path>
     <root id="archive" name="WavTree.jar">
       <element id="module-output" name="WavTree" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/swinglabs/swingx/1.6.1/swingx-1.6.1.jar" path-in-jar="/" />
