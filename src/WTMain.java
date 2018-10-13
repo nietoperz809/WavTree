@@ -28,6 +28,7 @@ public class WTMain
     private JXTable table1;
     public JLabel topLabel;
     private JButton copyPathButton;
+    private JButton editButton;
     private JCheckBox onlySoundCheck;
 
     private String root;
@@ -40,6 +41,7 @@ public class WTMain
     private MediaPlayer lastClip;
 
     final static JFXPanel fxPanel = new JFXPanel(); // start JFX
+    private String editDir = "notepad.exe";
 
     /**
      * Tree path to string
@@ -196,6 +198,22 @@ public class WTMain
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(new StringSelection(topLabel.getText()), null);
         });
+        // Start CFG editor
+        editButton.addActionListener(e ->
+        {
+            ArrayList<String> args = new ArrayList<>();
+            args.add (editDir); // command name
+            args.add (System.getProperty("user.dir")+"\\wavvy_settings.txt"); // optional args added as separate list items
+            ProcessBuilder pb = new ProcessBuilder (args);
+            try
+            {
+                pb.start();
+            }
+            catch (IOException e2)
+            {
+                System.out.println("cannot start audacity "+e2);
+            }
+        });
         onlySoundCheck.addActionListener(e ->
         {
             updateTable(lastPath);
@@ -232,35 +250,44 @@ public class WTMain
         updateTable(path);
     }
 
-    public static void main (String[] args)
+    private void ExecConfig()
     {
-        JFrame frame = new JFrame("WTMain");
-        WTMain wt = new WTMain();
-
         try
         {
-            ConfigFile conf = new ConfigFile("wavvy_settings.txt");
+            ConfigFile conf = new ConfigFile(System.getProperty("user.dir")+"\\wavvy_settings.txt");
             conf.setAction("root", strings ->
             {
-                wt.root = strings[0];
+                root = strings[0];
             });
             conf.setAction("audacity", strings ->
             {
-                wt.audacityPath = strings[0];
+                audacityPath = strings[0];
             });
             conf.setAction("store", strings ->
             {
-                wt.storeDir = strings[0];
+                storeDir = strings[0];
+            });
+            conf.setAction("edit", strings ->
+            {
+                editDir = strings[0];
             });
             conf.execute();
         }
         catch (IOException e)
         {
-            wt.root = "c:\\";
+            root = "c:\\";
             System.out.println("config file error");
         }
-        wt.lastPath = wt.root;
-        wt.updateUI(wt.root);
+        lastPath = root;
+        updateUI(root);
+    }
+
+    public static void main (String[] args)
+    {
+        JFrame frame = new JFrame("WTMain");
+        WTMain wt = new WTMain();
+
+        wt.ExecConfig();
 
         frame.setContentPane(wt.mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -304,13 +331,18 @@ public class WTMain
         scrollPane2.setViewportView(table1);
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new FlowLayout());
+        final JPanel panelBottom = new JPanel();
+        //panelBottom.setLayout();
         mainPanel.add(panel1, BorderLayout.NORTH);
+        mainPanel.add(panelBottom, BorderLayout.SOUTH);
         topLabel = new JLabel();
         panel1.add(topLabel);
         copyPathButton = new JButton("Copy path");
         onlySoundCheck = new JCheckBox("Only sounds");
-        panel1.add(copyPathButton);
-        panel1.add(onlySoundCheck);
+        editButton = new JButton("CfG File");
+        panelBottom.add(editButton);
+        panelBottom.add(copyPathButton);
+        panelBottom.add(onlySoundCheck);
     }
 }
 
