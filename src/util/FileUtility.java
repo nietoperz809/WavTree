@@ -24,7 +24,7 @@ interface SaveFunc
  *
  * @author Administrator
  */
-public class FileUtility
+class FileUtility
 {
     private static Object load(String s1, String s2, Component parent, LoadFunc code) throws Exception
     {

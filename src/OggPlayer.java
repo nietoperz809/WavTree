@@ -14,10 +14,10 @@ import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
 /*Git collas*/
 
-public class OggPlayer
+class OggPlayer
 {
-    static SourceDataLine line;
-    static ExecutorService executor = Executors.newFixedThreadPool(10);
+    private static SourceDataLine line;
+    private static final ExecutorService executor = Executors.newFixedThreadPool(10);
 
 //    public static void main(String[] args)
 //    {
@@ -35,7 +35,7 @@ public class OggPlayer
         });
     }
 
-    public static void play(String filePath)
+    private static void play (String filePath)
     {
         final File file = new File(filePath);
 

@@ -21,7 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class WTMain
+class WTMain
 {
     private JPanel mainPanel;
     private JTree tree1;
@@ -31,12 +31,12 @@ public class WTMain
     private JButton editButton;
     private JCheckBox onlySoundCheck;
 
-    private String root;
+    private String root = Constants.DEFAULT_ROOT;
     private String lastPath;
     private String audacityPath = "audacity.exe";
 
-    private HexView hexView = new HexView(/*dummy*/);
-    private String storeDir = System.getProperty("user.dir")+"\\WavStore";
+    private final HexView hexView = new HexView(/*dummy*/);
+    private String storeDir = Constants.PATH_TO_STOREDIR;
 
     private MediaPlayer lastClip;
 
@@ -49,7 +49,7 @@ public class WTMain
      * @param tp TreePath object
      * @return String representation (Components separated by \)
      */
-    public String TPtoString (TreePath tp)
+    private String TPtoString (TreePath tp)
     {
         StringBuffer tempSpot = new StringBuffer();
 
@@ -61,7 +61,7 @@ public class WTMain
         return tempSpot.toString();
     }
 
-    public WTMain ()
+    private WTMain ()
     {
         new File(storeDir).mkdirs();
         // Build UI
@@ -151,7 +151,7 @@ public class WTMain
                     item = new JMenuItem("Copy to store");
                     item.addActionListener(e1 ->
                     {
-                        String dest = storeDir+"\\"+filename;
+                        String dest = storeDir+Constants.SEP+filename;
                         try
                         {
                             Files.copy (new File(path).toPath(),
@@ -203,7 +203,7 @@ public class WTMain
         {
             ArrayList<String> args = new ArrayList<>();
             args.add (editDir); // command name
-            args.add (System.getProperty("user.dir")+"\\wavvy_settings.txt"); // optional args added as separate list items
+            args.add (Constants.PATH_TO_CONFIGFILE); // optional args added as separate list items
             ProcessBuilder pb = new ProcessBuilder (args);
             try
             {
@@ -220,7 +220,7 @@ public class WTMain
         });
     }
 
-    public void playWav (String filename)
+    private void playWav (String filename)
     {
         if (lastClip != null)
         {
@@ -254,7 +254,7 @@ public class WTMain
     {
         try
         {
-            ConfigFile conf = new ConfigFile(System.getProperty("user.dir")+"\\wavvy_settings.txt");
+            ConfigFile conf = new ConfigFile(Constants.PATH_TO_CONFIGFILE);
             conf.setAction("root", strings ->
             {
                 root = strings[0];
@@ -275,7 +275,6 @@ public class WTMain
         }
         catch (IOException e)
         {
-            root = "c:\\";
             System.out.println("config file error");
         }
         lastPath = root;

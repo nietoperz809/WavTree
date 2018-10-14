@@ -22,43 +22,15 @@ import java.io.FileInputStream;
  */
 public class HexView extends JTextArea
 {
-    static final int LINECHARS = 41;
-    static final int LEFTMARGIN = 6;
-    static final int RIGHTMARGIN = 28;
-    static final int TOPMARGIN = 0;
-    static final int BOTTOMMARGIN = 8191;
+    private static final int LINECHARS = 41;
+    private static final int LEFTMARGIN = 6;
+    private static final int RIGHTMARGIN = 28;
+    private static final int TOPMARGIN = 0;
+    private static final int BOTTOMMARGIN = 8191;
     private  int[] memory;
 
     private int lastKey;
     private final Point CurrentEditorPos = new Point();
-
-    private final KeyListener keyListener = new KeyListener()
-    {
-        @Override
-        public void keyTyped(KeyEvent e)
-        {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e)
-        {
-            if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
-            {
-                e.consume(); // Eat DEL and BS
-                return;
-            }
-            DefaultCaret caret = (DefaultCaret) getCaret();
-            caret.setUpdatePolicy (DefaultCaret.ALWAYS_UPDATE); 
-            lastKey = e.getKeyCode();
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e)
-        {
-            DefaultCaret caret = (DefaultCaret) getCaret();
-            caret.setUpdatePolicy (DefaultCaret.NEVER_UPDATE); 
-        }
-    };
 
     private int getMemLen (int in)
     {
@@ -90,92 +62,6 @@ public class HexView extends JTextArea
             e.printStackTrace();
         }
     }
-
-    private final NavigationFilter filter = new NavigationFilter()
-    {
-        private int topdetect;
-        private int downdetect;
-
-        @Override
-        public void setDot(FilterBypass fb, int dot, Position.Bias bias)
-        {
-            CurrentEditorPos.x = dot % LINECHARS;
-            CurrentEditorPos.y = dot / LINECHARS;
-
-            if (lastKey == KeyEvent.VK_UP && CurrentEditorPos.y == TOPMARGIN)
-            {
-                topdetect++;
-                if (topdetect == 2)
-                {
-                    CurrentEditorPos.y = BOTTOMMARGIN;
-                    topdetect = 0;
-                }
-            }
-            else
-            {
-                topdetect = 0;
-            }
-
-            if (lastKey == KeyEvent.VK_DOWN && CurrentEditorPos.y == BOTTOMMARGIN)
-            {
-                downdetect++;
-                if (downdetect == 2)
-                {
-                    CurrentEditorPos.y = TOPMARGIN;
-                    downdetect = 0;
-                }
-            }
-            else
-            {
-                downdetect = 0;
-            }
-
-            if ((CurrentEditorPos.x + 1) % 3 == 0)
-            {
-                if (lastKey == KeyEvent.VK_LEFT)
-                {
-                    CurrentEditorPos.x--;
-                }
-                else
-                {
-                    CurrentEditorPos.x++;
-                }
-            }
-
-            if (CurrentEditorPos.x < LEFTMARGIN)
-            {
-                CurrentEditorPos.x = RIGHTMARGIN;
-                if (CurrentEditorPos.y != 0)
-                {
-                    CurrentEditorPos.y--;
-                }
-                else
-                {
-                    CurrentEditorPos.y = BOTTOMMARGIN;
-                }
-            }
-            else if (CurrentEditorPos.x > RIGHTMARGIN)
-            {
-                CurrentEditorPos.x = LEFTMARGIN;
-                if (CurrentEditorPos.y < BOTTOMMARGIN)
-                {
-                    CurrentEditorPos.y++;
-                }
-                else
-                {
-                    CurrentEditorPos.y = TOPMARGIN;
-                }
-            }
-
-            fb.setDot(CurrentEditorPos.y * LINECHARS + CurrentEditorPos.x, bias);
-        }
-
-        @Override
-        public void moveDot(FilterBypass fb, int dot, Position.Bias bias)
-        {
-            //fb.moveDot(dot, bias);
-        }
-    };
 
     private final PlainDoc2 plainDoc = new PlainDoc2()
     {
@@ -221,7 +107,6 @@ public class HexView extends JTextArea
     
     /**
      * Constructor
-     * @param mem Memory block to be displayed
      */
     public HexView(/*int[] mem*/)
     {
@@ -241,10 +126,124 @@ public class HexView extends JTextArea
         }
         catch (BadLocationException ex)
         {
-            System.out.println(ex);
+            System.out.println("failed to set highliter "+ex);
         }
 
+        //fb.moveDot(dot, bias);
+        NavigationFilter filter = new NavigationFilter()
+        {
+            private int topdetect;
+            private int downdetect;
+
+            @Override
+            public void setDot (FilterBypass fb, int dot, Position.Bias bias)
+            {
+                CurrentEditorPos.x = dot % LINECHARS;
+                CurrentEditorPos.y = dot / LINECHARS;
+
+                if (lastKey == KeyEvent.VK_UP && CurrentEditorPos.y == TOPMARGIN)
+                {
+                    topdetect++;
+                    if (topdetect == 2)
+                    {
+                        CurrentEditorPos.y = BOTTOMMARGIN;
+                        topdetect = 0;
+                    }
+                }
+                else
+                {
+                    topdetect = 0;
+                }
+
+                if (lastKey == KeyEvent.VK_DOWN && CurrentEditorPos.y == BOTTOMMARGIN)
+                {
+                    downdetect++;
+                    if (downdetect == 2)
+                    {
+                        CurrentEditorPos.y = TOPMARGIN;
+                        downdetect = 0;
+                    }
+                }
+                else
+                {
+                    downdetect = 0;
+                }
+
+                if ((CurrentEditorPos.x + 1) % 3 == 0)
+                {
+                    if (lastKey == KeyEvent.VK_LEFT)
+                    {
+                        CurrentEditorPos.x--;
+                    }
+                    else
+                    {
+                        CurrentEditorPos.x++;
+                    }
+                }
+
+                if (CurrentEditorPos.x < LEFTMARGIN)
+                {
+                    CurrentEditorPos.x = RIGHTMARGIN;
+                    if (CurrentEditorPos.y != 0)
+                    {
+                        CurrentEditorPos.y--;
+                    }
+                    else
+                    {
+                        CurrentEditorPos.y = BOTTOMMARGIN;
+                    }
+                }
+                else if (CurrentEditorPos.x > RIGHTMARGIN)
+                {
+                    CurrentEditorPos.x = LEFTMARGIN;
+                    if (CurrentEditorPos.y < BOTTOMMARGIN)
+                    {
+                        CurrentEditorPos.y++;
+                    }
+                    else
+                    {
+                        CurrentEditorPos.y = TOPMARGIN;
+                    }
+                }
+
+                fb.setDot(CurrentEditorPos.y * LINECHARS + CurrentEditorPos.x, bias);
+            }
+
+            @Override
+            public void moveDot (FilterBypass fb, int dot, Position.Bias bias)
+            {
+                //fb.moveDot(dot, bias);
+            }
+        };
         this.setNavigationFilter(filter);
+        // Eat DEL and BS
+        KeyListener keyListener = new KeyListener()
+        {
+            @Override
+            public void keyTyped (KeyEvent e)
+            {
+            }
+
+            @Override
+            public void keyPressed (KeyEvent e)
+            {
+                if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
+                {
+                    e.consume(); // Eat DEL and BS
+                    return;
+                }
+                DefaultCaret caret = (DefaultCaret) getCaret();
+                caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+                lastKey = e.getKeyCode();
+            }
+
+            @Override
+            public void keyReleased (KeyEvent e)
+            {
+                DefaultCaret caret = (DefaultCaret) getCaret();
+                caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+            }
+        };
         this.addKeyListener(keyListener);
         this.setDocument(plainDoc);
 
@@ -295,7 +294,7 @@ public class HexView extends JTextArea
         return b;
     }
 
-    public void populate()
+    private void populate ()
     {
         StringBuilder sb = new StringBuilder();
         for (int n = 0; n < memory.length; n += 8)

@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DirLister
+class DirLister
 {
-    public static final String[] extensions = new String[] { "wav", "mp3", "aac",
+    private static final String[] extensions = new String[] { "wav", "mp3", "aac",
             "pcm", "ogg", "au", "aiff" };
 
     public static DefaultTableModel popTable (String rootPath, boolean onlySounds)
@@ -71,7 +71,7 @@ public class DirLister
         }
         catch (Exception e)
         {
-            System.out.println(e);
+            System.out.println("cannot get node entry "+e);
         }
     }
 

@@ -6,13 +6,12 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileTransferHandler extends TransferHandler
+class FileTransferHandler extends TransferHandler
 {
-    WTMain _mainwnd;
+    private final WTMain _mainwnd;
 
     public FileTransferHandler (WTMain wtm)
     {
@@ -43,7 +42,7 @@ public class FileTransferHandler extends TransferHandler
 class FileTransferable implements Transferable
 {
 
-    private List<File> files;
+    private final List<File> files;
 
     public FileTransferable(List<File> files) {
         this.files = files;
@@ -58,7 +57,7 @@ class FileTransferable implements Transferable
     }
 
     public Object getTransferData(DataFlavor flavor)
-            throws UnsupportedFlavorException, IOException
+            throws UnsupportedFlavorException
     {
         if (!isDataFlavorSupported(flavor)) {
             throw new UnsupportedFlavorException(flavor);

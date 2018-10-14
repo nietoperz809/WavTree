@@ -41,7 +41,7 @@ public class HexTools
         return sb.toString();
     }
     
-    public static int readHex(String in) throws Exception
+    private static int readHex (String in) throws Exception
     {
         try
         {
@@ -53,7 +53,7 @@ public class HexTools
         }
     }
     
-    public static int readNumber (String in) throws Exception
+    private static int readNumber (String in) throws Exception
     {
         if (in.charAt(0) == '$')
             return readHex (in.substring(1));

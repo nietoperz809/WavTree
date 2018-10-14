@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  * Commands are functions/methods that take a single String[] as argument
  * 
  */
-public class ConfigFile
+class ConfigFile
 {
     private final String _path;
     private final HashMap<String, Consumer<String[]>> _map = new HashMap<>();

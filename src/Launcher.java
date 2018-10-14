@@ -1,4 +1,4 @@
-public class Launcher
+class Launcher
 {
     public static void main(String[] args)
     {

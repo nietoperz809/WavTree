@@ -173,13 +173,13 @@ public class MyAppletLauncher extends JApplet {
 public class JarClassLoader extends ClassLoader {
 
     /** VM parameter key to turn on logging to file or console. */
-    public static final String KEY_LOGGER = "JarClassLoader.logger";
+    private static final String KEY_LOGGER = "JarClassLoader.logger";
 
     /**
      * VM parameter key to define log level.
      * Valid levels are defined in {@link LogLevel}.
      */
-    public static final String KEY_LOGGER_LEVEL = "JarClassLoader.logger.level";
+    private static final String KEY_LOGGER_LEVEL = "JarClassLoader.logger.level";
 
     /**
      * VM parameter key to define log area.
@@ -187,7 +187,7 @@ public class JarClassLoader extends ClassLoader {
      * Default value is {@link LogArea#ALL}. Multiple areas could be specified
      * with ',' delimiter (no spaces!).
      */
-    public static final String KEY_LOGGER_AREA = "JarClassLoader.logger.area";
+    private static final String KEY_LOGGER_AREA = "JarClassLoader.logger.area";
 
     public enum LogLevel { ERROR, WARN, INFO, DEBUG }
     public enum LogArea {
@@ -216,13 +216,13 @@ public class JarClassLoader extends ClassLoader {
      * periodically and empty it if required. Temporary files could accumulate
      * there if application was killed.
      */
-    public static final String TMP_SUB_DIRECTORY = "JarClassLoader";
+    private static final String TMP_SUB_DIRECTORY = "JarClassLoader";
 
     private File dirTemp;
     private PrintStream logger;
-    private List<JarFileInfo> lstJarFile;
-    private Set<File> hsDeleteOnExit;
-    private Map<String, Class<?>> hmClass;
+    private final List<JarFileInfo> lstJarFile;
+    private final Set<File> hsDeleteOnExit;
+    private final Map<String, Class<?>> hmClass;
     private LogLevel logLevel;
     private Set<LogArea> hsLogArea;
     private boolean bLogConsole;
@@ -241,7 +241,7 @@ public class JarClassLoader extends ClassLoader {
      *
      * @param parent class loader parent.
      */
-    public JarClassLoader(ClassLoader parent) {
+    private JarClassLoader (ClassLoader parent) {
         super(parent);
         initLogger();
 
@@ -705,7 +705,7 @@ public class JarClassLoader extends ClassLoader {
      *
      * @return true if application was started from JAR.
      */
-    public boolean isLaunchedFromJar() {
+    private boolean isLaunchedFromJar () {
         return (lstJarFile.size() > 0);
     } // isLaunchedFromJar()
 
@@ -1114,11 +1114,11 @@ public class JarClassLoader extends ClassLoader {
      * Inner class with JAR file information.
      */
     private static class JarFileInfo {
-        JarFile jarFile;   // this is the essence of JarFileInfo wrapper
-        String simpleName; // accumulated for logging like: "topJar!childJar!kidJar"
-        File fileDeleteOnExit;
+        final JarFile jarFile;   // this is the essence of JarFileInfo wrapper
+        final String simpleName; // accumulated for logging like: "topJar!childJar!kidJar"
+        final File fileDeleteOnExit;
         Manifest mf; // required for package creation
-        ProtectionDomain pd;
+        final ProtectionDomain pd;
         
         /**
          * @param jarFile
@@ -1183,8 +1183,8 @@ public class JarClassLoader extends ClassLoader {
      * Inner class with JAR entry information. Keeps JAR file and entry object.
      */
     private static class JarEntryInfo {
-        JarFileInfo jarFileInfo;
-        JarEntry jarEntry;
+        final JarFileInfo jarFileInfo;
+        final JarEntry jarEntry;
         JarEntryInfo(JarFileInfo jarFileInfo, JarEntry jarEntry) {
             this.jarFileInfo = jarFileInfo;
             this.jarEntry = jarEntry;
