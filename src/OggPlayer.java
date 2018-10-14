@@ -15,11 +15,6 @@ import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 class OggPlayer
 {
     private static SourceDataLine line;
-//    public static void main(String[] args)
-//    {
-//        player = new OggPlayer();
-//        player.play(System.getProperty("user.dir")+ "/audiofile/001001.ogg");
-//    }
 
     public static void asyncPlay (String path)
     {

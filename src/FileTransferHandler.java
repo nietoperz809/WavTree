@@ -1,5 +1,3 @@
-import org.jdesktop.swingx.JXTable;
-
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.datatransfer.DataFlavor;
@@ -11,21 +9,21 @@ import java.util.List;
 
 class FileTransferHandler extends TransferHandler
 {
-    private final WTMain _mainwnd;
+    private final TransferInfo _info;
 
-    public FileTransferHandler (WTMain wtm)
+    public FileTransferHandler (TransferInfo info)
     {
-        _mainwnd = wtm;
+        _info = info;
     }
 
     @Override
     protected Transferable createTransferable(JComponent c)
     {
-        JXTable jx = (JXTable)c;
+        MyJTable jx = (MyJTable)c;
         int i = jx.convertRowIndexToModel(jx.getSelectedRow());
         TableModel tm = jx.getModel();
         String filename = (String) tm.getValueAt(i, 0);
-        String path = _mainwnd.topLabel.getText() + filename;
+        String path = _info.getPath(i)+filename; //_mainwnd.topLabel.getText() + filename;
 
         List<File> files = new ArrayList<>();
         files.add(new File(path));

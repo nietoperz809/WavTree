@@ -1,9 +1,4 @@
 import hexeditor.HexView;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.sort.TableSortController;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,13 +14,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 
-class WTMain
+class WTMain implements TransferInfo
 {
     private JPanel mainPanel;
     private JTree tree1;
-    private JXTable table1;
+    private MyJTable table1;
     public JLabel topLabel;
     private JButton copyPathButton;
     private JButton editButton;
@@ -38,9 +32,6 @@ class WTMain
     private final HexView hexView = new HexView(/*dummy*/);
     private String storeDir = Constants.PATH_TO_STOREDIR;
 
-    private MediaPlayer lastClip;
-
-    final static JFXPanel fxPanel = new JFXPanel(); // start JFX
     private String editDir = "notepad.exe";
 
     /**
@@ -72,8 +63,8 @@ class WTMain
                 TreePath tp = tree1.getPathForLocation(e.getX(), e.getY());
                 if (tp != null)
                 {
-                    System.out.println(TPtoString(tp));
-                    SeekDialog.create ("SeekSounds");
+                    //System.out.println(TPtoString(tp));
+                    SeekDialog.create ("SeekSounds", TPtoString(tp));
                 }
 
             });
@@ -143,25 +134,6 @@ class WTMain
         else
         {
             hexView.readfirstBytes(path, 64);
-            //hexViewScrollPane.getVerticalScrollBar().setVisible(false);
-            String lower = path.toLowerCase();
-            if (lower.endsWith(".wav")
-                    || lower.endsWith(".mp3")
-                    || lower.endsWith(".aac")
-                    || lower.endsWith(".pcm")
-            )
-            {
-                playWav(path);
-            }
-            else if (lower.endsWith(".ogg")
-                    || lower.endsWith(".au")
-                    || lower.endsWith(".aiff")
-
-            )
-            {
-                OggPlayer.stop();
-                OggPlayer.asyncPlay(path);
-            }
         }
     }
 
@@ -256,27 +228,23 @@ class WTMain
                 updateTable(lastPath));
     }
 
-    private void playWav (String filename)
-    {
-        if (lastClip != null)
-        {
-            lastClip.stop();
-        }
-        Media hit = new Media(new File(filename).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(hit);
-        lastClip = mediaPlayer;
-        mediaPlayer.play();
-    }
+//    private void playWav (String filename)
+//    {
+//        if (lastClip != null)
+//        {
+//            lastClip.stop();
+//        }
+//        Media hit = new Media(new File(filename).toURI().toString());
+//        MediaPlayer mediaPlayer = new MediaPlayer(hit);
+//        lastClip = mediaPlayer;
+//        mediaPlayer.play();
+//    }
 
     private void updateTable (String path)
     {
         DefaultTableModel tab = DirLister.getFilledTableModel(path, onlySoundCheck.isSelected());
-        table1.setModel(tab);
+        table1.mySetModel(tab);
         topLabel.setText(path);
-        // Set table long comparator for size column
-        TableSortController con = (TableSortController) table1.getRowSorter();
-        con.setComparator(1, (Comparator<String>) (o1, o2) ->
-                (int)Math.signum(Long.parseLong(o1) - Long.parseLong(o2)));
     }
 
     private void updateUI (String path)
@@ -352,7 +320,7 @@ class WTMain
         scrollPane1.setViewportView(tree1);
         final JScrollPane scrollPane2 = new JScrollPane();
         sp3.setRightComponent(scrollPane2);
-        table1 = new JXTable();
+        table1 = new MyJTable(this);
         table1.setDragEnabled(true);
         table1.setTransferHandler(new FileTransferHandler(this));
         scrollPane2.setViewportView(table1);
@@ -370,6 +338,12 @@ class WTMain
         panelBottom.add(editButton);
         panelBottom.add(copyPathButton);
         panelBottom.add(onlySoundCheck);
+    }
+
+    @Override
+    public String getPath (int rowNumber)
+    {
+        return topLabel.getText();
     }
 }
 
