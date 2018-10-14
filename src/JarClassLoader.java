@@ -245,12 +245,12 @@ public class JarClassLoader extends ClassLoader {
         super(parent);
         initLogger();
 
-        hmClass = new HashMap<String, Class<?>>();
-        lstJarFile = new ArrayList<JarFileInfo>();
-        hsDeleteOnExit = new HashSet<File>();
+        hmClass = new HashMap<>();
+        lstJarFile = new ArrayList<>();
+        hsDeleteOnExit = new HashSet<>();
 
         // Prepare common for all protocols 
-        String sUrlTopJar = null;
+        String sUrlTopJar;
         ProtectionDomain pdTop = getClass().getProtectionDomain();
         CodeSource cs = pdTop.getCodeSource();
         URL urlTopJar = cs.getLocation();
@@ -333,7 +333,7 @@ public class JarClassLoader extends ClassLoader {
         bLogConsole = true;
         this.logger = System.out; // default to console
         logLevel = LogLevel.ERROR;
-        hsLogArea = new HashSet<LogArea>();
+        hsLogArea = new HashSet<>();
         hsLogArea.add(LogArea.CONFIG);
 
         // Logger stream console or file:
@@ -482,7 +482,7 @@ public class JarClassLoader extends ClassLoader {
     } // findJarEntry()
 
     private List<JarEntryInfo> findJarEntries(String sName) {
-        List<JarEntryInfo> lst = new ArrayList<JarEntryInfo>();
+        List<JarEntryInfo> lst = new ArrayList<>();
         for (JarFileInfo jarFileInfo : lstJarFile) {
             JarFile jarFile = jarFileInfo.jarFile;
             JarEntry jarEntry = jarFile.getJarEntry(sName);
@@ -565,7 +565,7 @@ public class JarClassLoader extends ClassLoader {
             // Do not waste time if no logging.
             return;
         }
-        Map<String, JarFileInfo> hm = new HashMap<String, JarFileInfo>();
+        Map<String, JarFileInfo> hm = new HashMap<>();
         for (JarFileInfo jarFileInfo : lstJarFile) {
             JarFile jarFile = jarFileInfo.jarFile;
             Enumeration<JarEntry> en = jarFile.entries();
@@ -978,7 +978,7 @@ public class JarClassLoader extends ClassLoader {
         logDebug(LogArea.RESOURCE, "getResources: %s", sName);
         if (isLaunchedFromJar()) {
             List<JarEntryInfo> lstJarEntry = findJarEntries(normalizeResourceName(sName));
-            List<URL> lstURL = new ArrayList<URL>();
+            List<URL> lstURL = new ArrayList<>();
             for (JarEntryInfo inf : lstJarEntry) {
                 URL url = inf.getURL();
                 if (url != null) {
@@ -1209,7 +1209,7 @@ public class JarClassLoader extends ClassLoader {
          */
         byte[] getJarBytes() throws JarClassLoaderException {
             DataInputStream dis = null;
-            byte[] a_by = null;
+            byte[] a_by;
             try {
                 long lSize = jarEntry.getSize();
                 if (lSize <= 0  ||  lSize >= Integer.MAX_VALUE) {

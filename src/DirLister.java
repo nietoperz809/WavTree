@@ -10,10 +10,7 @@ import java.util.Objects;
 
 class DirLister
 {
-    private static final String[] extensions = new String[] { "wav", "mp3", "aac",
-            "pcm", "ogg", "au", "aiff" };
-
-    public static DefaultTableModel popTable (String rootPath, boolean onlySounds)
+    public static DefaultTableModel getFilledTableModel (String rootPath, boolean onlySounds)
     {
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<String[]> values = new ArrayList<>();
@@ -23,7 +20,7 @@ class DirLister
 
         List<File> files = (List<File>)
                 FileUtils.listFiles(new File(rootPath),
-                        onlySounds ? extensions : null,
+                        onlySounds ? Constants.SOUND_EXT : null,
                         false);
         try
         {
@@ -37,11 +34,43 @@ class DirLister
         }
         catch (Exception e)
         {
-            System.out.println("popTable fail");
+            System.out.println("tabModelFill fail");
         }
         return new DefaultTableModel (values.toArray(new Object[][] {}),
                                         columns.toArray());
     }
+
+//    public static DefaultTableModel getEmptySearchTableModel (String rootPath)
+//    {
+//        ArrayList<String> columns = new ArrayList<>();
+//        ArrayList<String[]> values = new ArrayList<>();
+//
+//        columns.add("File");
+//        columns.add("Size");
+//        columns.add("Path");
+//
+////        List<File> files = (List<File>)
+////                FileUtils.listFiles(new File(rootPath),
+////                        Constants.SOUND_EXT,
+////                        true);
+////        try
+////        {
+////            for (File f : files)
+////            {
+////                if (f.isFile())
+////                {
+////                    values.add (new String[]{f.getName(), ""+f.length(), f.getPath()});
+////                }
+////            }
+////        }
+////        catch (Exception e)
+////        {
+////            System.out.println("tabModelFill fail");
+////        }
+//        return new DefaultTableModel (values.toArray(new Object[][] {}),
+//                columns.toArray());
+//    }
+
 
     public static DefaultTreeModel getRootEntry (String _root)
     {
@@ -63,7 +92,8 @@ class DirLister
             {
                 if (f.isDirectory())
                 {
-                    DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName() + "\\");
+                    DefaultMutableTreeNode child = 
+                            new DefaultMutableTreeNode(f.getName() + Constants.SEP);
                     tm.insertNodeInto(child, rootNode, rootNode.getChildCount());
                 }
             }

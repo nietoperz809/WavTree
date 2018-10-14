@@ -6,8 +6,6 @@ import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 import static javax.sound.sampled.AudioSystem.getAudioInputStream;
@@ -17,8 +15,6 @@ import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 class OggPlayer
 {
     private static SourceDataLine line;
-    private static final ExecutorService executor = Executors.newFixedThreadPool(10);
-
 //    public static void main(String[] args)
 //    {
 //        player = new OggPlayer();
@@ -28,7 +24,7 @@ class OggPlayer
     public static void asyncPlay (String path)
     {
         final String arg = path;
-        executor.submit((Callable<Void>) () ->
+        Constants.executor.submit((Callable<Void>) () ->
         {
             play(arg);
             return null;

@@ -51,7 +51,7 @@ class WTMain
      */
     private String TPtoString (TreePath tp)
     {
-        StringBuffer tempSpot = new StringBuffer();
+        StringBuilder tempSpot = new StringBuilder();
 
         for (int counter = 0, maxCounter = tp.getPathCount(); counter < maxCounter;
              counter++)
@@ -59,6 +59,110 @@ class WTMain
             tempSpot.append(tp.getPathComponent(counter));
         }
         return tempSpot.toString();
+    }
+
+    private void tree1MouseClicked (MouseEvent e)
+    {
+        if (e.getButton() == MouseEvent.BUTTON3) // Right click
+        {
+            JPopupMenu menu = new JPopupMenu();
+            JMenuItem item = new JMenuItem("Seek for sound files");
+            item.addActionListener(e1 ->
+            {
+                TreePath tp = tree1.getPathForLocation(e.getX(), e.getY());
+                if (tp != null)
+                {
+                    System.out.println(TPtoString(tp));
+                    SeekDialog.create ("SeekSounds");
+                }
+
+            });
+            menu.add(item);
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+
+    private void table1MouseClicked (MouseEvent e)
+    {
+        int i = table1.convertRowIndexToModel(table1.getSelectedRow());
+        TableModel tm = table1.getModel();
+        String filename = (String) tm.getValueAt(i, 0);
+        String path = topLabel.getText() + filename;
+
+        if (e.getButton() == MouseEvent.BUTTON3) // Right click
+        {
+            JPopupMenu menu = new JPopupMenu();
+
+            // Copy Path
+            JMenuItem item = new JMenuItem("Copy full path");
+            item.addActionListener(e1 ->
+            {
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(new StringSelection(path), null);
+            });
+            menu.add(item);
+
+            // Open with Audacity
+            item = new JMenuItem("Open with Audacity");
+            item.addActionListener(e1 ->
+            {
+                ArrayList<String> args = new ArrayList<>();
+                args.add (audacityPath); // command name
+                args.add (path); // optional args added as separate list items
+                ProcessBuilder pb = new ProcessBuilder (args);
+                try
+                {
+                    Process p = pb.start();
+                }
+                catch (IOException e2)
+                {
+                    System.out.println("cannot start audacity "+e2);
+                }
+            });
+            menu.add(item);
+
+            // Copy to Store
+            item = new JMenuItem("Copy to store");
+            item.addActionListener(e1 ->
+            {
+                String dest = storeDir+Constants.SEP+filename;
+                try
+                {
+                    Files.copy (new File(path).toPath(),
+                            new File(dest).toPath(),
+                            StandardCopyOption.REPLACE_EXISTING);
+                }
+                catch (IOException e2)
+                {
+                    System.out.println("Error while copying "+e2);
+                }
+            });
+            menu.add(item);
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+        else
+        {
+            hexView.readfirstBytes(path, 64);
+            //hexViewScrollPane.getVerticalScrollBar().setVisible(false);
+            String lower = path.toLowerCase();
+            if (lower.endsWith(".wav")
+                    || lower.endsWith(".mp3")
+                    || lower.endsWith(".aac")
+                    || lower.endsWith(".pcm")
+            )
+            {
+                playWav(path);
+            }
+            else if (lower.endsWith(".ogg")
+                    || lower.endsWith(".au")
+                    || lower.endsWith(".aiff")
+
+            )
+            {
+                OggPlayer.stop();
+                OggPlayer.asyncPlay(path);
+            }
+        }
     }
 
     private WTMain ()
@@ -83,6 +187,7 @@ class WTMain
             // Finally, set the tree's background color
             tree1.setBackground(Color.black);
         }
+
         // Tree selection listener
         tree1.addTreeSelectionListener(e ->
         {
@@ -104,94 +209,27 @@ class WTMain
 
             updateTable(lastPath);
         });
+
         // Table click listener
         table1.addMouseListener(new MouseAdapter()
         {
             @Override
             public void mouseClicked (MouseEvent e)
             {
-                int i = table1.convertRowIndexToModel(table1.getSelectedRow());
-                TableModel tm = table1.getModel();
-                String filename = (String) tm.getValueAt(i, 0);
-                String path = topLabel.getText() + filename;
-
-                if (e.getButton() == MouseEvent.BUTTON3) // Right click
-                {
-                    JPopupMenu menu = new JPopupMenu();
-
-                    // Copy Path
-                    JMenuItem item = new JMenuItem("Copy full path");
-                    item.addActionListener(e1 ->
-                    {
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(new StringSelection(path), null);
-                    });
-                    menu.add(item);
-
-                    // Open with Audacity
-                    item = new JMenuItem("Open with Audacity");
-                    item.addActionListener(e1 ->
-                    {
-                        ArrayList<String> args = new ArrayList<>();
-                        args.add (audacityPath); // command name
-                        args.add (path); // optional args added as separate list items
-                        ProcessBuilder pb = new ProcessBuilder (args);
-                        try
-                        {
-                            Process p = pb.start();
-                        }
-                        catch (IOException e2)
-                        {
-                            System.out.println("cannot start audacity "+e2);
-                        }
-                    });
-                    menu.add(item);
-
-                    // Copy to Store
-                    item = new JMenuItem("Copy to store");
-                    item.addActionListener(e1 ->
-                    {
-                        String dest = storeDir+Constants.SEP+filename;
-                        try
-                        {
-                            Files.copy (new File(path).toPath(),
-                                    new File(dest).toPath(),
-                                    StandardCopyOption.REPLACE_EXISTING);
-                        }
-                        catch (IOException e2)
-                        {
-                            System.out.println("Error while copying "+e2);
-                        }
-                    });
-                    menu.add(item);
-
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
-                else
-                {
-                    hexView.readfirstBytes(path, 64);
-                    //hexViewScrollPane.getVerticalScrollBar().setVisible(false);
-                    String lower = path.toLowerCase();
-                    if (lower.endsWith(".wav")
-                            || lower.endsWith(".mp3")
-                            || lower.endsWith(".aac")
-                            || lower.endsWith(".pcm")
-                    )
-                    {
-                        playWav(path);
-                    }
-                    else if (lower.endsWith(".ogg")
-                            || lower.endsWith(".au")
-                            || lower.endsWith(".aiff")
-
-                    )
-                    {
-                        OggPlayer.stop();
-                        OggPlayer.asyncPlay(path);
-                    }
-                }
+                table1MouseClicked(e);
             }
         });
+
+        // Tree click listener
+        tree1.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked (MouseEvent e)
+            {
+                tree1MouseClicked(e);
+            }
+        });
+
         // Copy Path to clipboard
         copyPathButton.addActionListener(e ->
         {
@@ -215,9 +253,7 @@ class WTMain
             }
         });
         onlySoundCheck.addActionListener(e ->
-        {
-            updateTable(lastPath);
-        });
+                updateTable(lastPath));
     }
 
     private void playWav (String filename)
@@ -234,7 +270,7 @@ class WTMain
 
     private void updateTable (String path)
     {
-        DefaultTableModel tab = DirLister.popTable(path, onlySoundCheck.isSelected());
+        DefaultTableModel tab = DirLister.getFilledTableModel(path, onlySoundCheck.isSelected());
         table1.setModel(tab);
         topLabel.setText(path);
         // Set table long comparator for size column
@@ -256,21 +292,13 @@ class WTMain
         {
             ConfigFile conf = new ConfigFile(Constants.PATH_TO_CONFIGFILE);
             conf.setAction("root", strings ->
-            {
-                root = strings[0];
-            });
+                    root = strings[0]);
             conf.setAction("audacity", strings ->
-            {
-                audacityPath = strings[0];
-            });
+                    audacityPath = strings[0]);
             conf.setAction("store", strings ->
-            {
-                storeDir = strings[0];
-            });
+                    storeDir = strings[0]);
             conf.setAction("edit", strings ->
-            {
-                editDir = strings[0];
-            });
+                    editDir = strings[0]);
             conf.execute();
         }
         catch (IOException e)
