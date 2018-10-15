@@ -1,18 +1,14 @@
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.sort.TableSortController;
 
 import javax.swing.table.TableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.Comparator;
 
 public class MyJTable extends JXTable
 {
-    private MediaPlayer lastClip;
     final static JFXPanel fxPanel = new JFXPanel(); // start JFX
 
 
@@ -38,34 +34,17 @@ public class MyJTable extends JXTable
                             || lower.endsWith(".mp3")
                             || lower.endsWith(".aac")
                             || lower.endsWith(".pcm")
-                    )
-                    {
-                        playWav(path);
-                    }
-                    else if (lower.endsWith(".ogg")
+                            || lower.endsWith(".ogg")
                             || lower.endsWith(".au")
                             || lower.endsWith(".aiff")
-
                     )
                     {
-                        OggPlayer.stop();
-                        OggPlayer.asyncPlay(path);
+                        WavePlayer.stop();
+                        WavePlayer.asyncPlay(path);
                     }
                 }
             }
         });
-    }
-
-    private void playWav (String filename)
-    {
-        if (lastClip != null)
-        {
-            lastClip.stop();
-        }
-        Media hit = new Media(new File(filename).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(hit);
-        lastClip = mediaPlayer;
-        mediaPlayer.play();
     }
 
     public void mySetModel (TableModel dataModel)

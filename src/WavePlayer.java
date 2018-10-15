@@ -12,7 +12,7 @@ import static javax.sound.sampled.AudioSystem.getAudioInputStream;
 
 /*Git collas*/
 
-class OggPlayer
+class WavePlayer
 {
     private static SourceDataLine line;
 

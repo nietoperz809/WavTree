@@ -1,6 +1,6 @@
 ****** This is the Wavvy Config file
 
-root :: C:\Users\Administrator\Desktop\audio software\
+root :: C:\
 audacity :: C:\Program Files (x86)\Audacity\audacity.exe
 store :: C:\Users\Administrator\Desktop\song2
 edit :: C:\Program Files (x86)\Sublime Text 3\sublime_text.exe

@@ -10,8 +10,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SeekDialog extends JDialog implements TransferInfo
 {
+    private int numFiles;
     private JPanel contentPane;
     private JButton buttonOK;
+    private JLabel infoText;
     private MyJTable table1;
     private AtomicBoolean running = new AtomicBoolean();
 
@@ -28,10 +30,12 @@ public class SeekDialog extends JDialog implements TransferInfo
         table1.mySetModel(tm);
         Constants.executor.submit((Callable<Void>) () ->
         {
+            infoText.setText ("Searching ...");
+            numFiles = 0;
             running.set(true);
             File arr[] = new File(root).listFiles();
             fillTable(root, arr, 0, tm);
-            System.out.println("Table filled");
+            infoText.setText ("Ready, found "+numFiles+" samplings");
             return null;
         });
         this.addWindowListener(new WindowAdapter()
@@ -59,14 +63,6 @@ public class SeekDialog extends JDialog implements TransferInfo
         return dialog;
     }
 
-    public static void main (String[] args)
-    {
-        SeekDialog dialog = new SeekDialog("test", "c:\\");
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
-    }
-
     void fillTable (String dir, File[] arr, int index, DefaultTableModel tm)
     {
         // terminate condition
@@ -84,7 +80,7 @@ public class SeekDialog extends JDialog implements TransferInfo
             String lower = name.toLowerCase();
             for (String s : Constants.SOUND_EXT)
             {
-                if (lower.endsWith(s))
+                if (lower.endsWith("."+s))
                 {
                     tm.addRow(new Object[]
                             {
@@ -92,6 +88,8 @@ public class SeekDialog extends JDialog implements TransferInfo
                                     "" + f.length(),
                                     f.getParent()+Constants.SEP
                             });
+                    numFiles++;
+                    infoText.setText ("Searching ... "+numFiles+" found");
                     break;
                 }
             }
@@ -124,6 +122,8 @@ public class SeekDialog extends JDialog implements TransferInfo
         buttonOK = new JButton();
         buttonOK.setText("OK");
         panel2.add(buttonOK);
+        infoText = new JLabel();
+        panel2.add (infoText);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, BorderLayout.CENTER);
         table1 = new MyJTable(this);
