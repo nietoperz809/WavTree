@@ -6,7 +6,13 @@ import javax.swing.table.TableModel;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -25,14 +31,14 @@ class WTMain implements TransferInfo
     private JButton editButton;
     private JCheckBox onlySoundCheck;
 
-    private String root = Constants.DEFAULT_ROOT;
-    private String lastPath;
+    private String lastPath = Constants.DEFAULT_ROOT;
     private String audacityPath = "audacity.exe";
 
     private final HexView hexView = new HexView(/*dummy*/);
     private String storeDir = Constants.PATH_TO_STOREDIR;
 
     private String editDir = "notepad.exe";
+    private JButton pathUpButton;
 
     /**
      * Tree path to string
@@ -182,6 +188,36 @@ class WTMain implements TransferInfo
             updateTable(lastPath);
         });
 
+        // Enable tree drop target
+        new DropTarget(tree1, new DropTargetAdapter()
+        {
+            @Override
+            public void drop (DropTargetDropEvent event)
+            {
+                event.acceptDrop(DnDConstants.ACTION_COPY);
+                Transferable transferable = event.getTransferable();
+                DataFlavor[] flavors = transferable.getTransferDataFlavors();
+                for (DataFlavor flavor : flavors)
+                {
+                    try
+                    {
+                        if (flavor.isFlavorJavaFileListType())
+                        {
+                            java.util.List<File> files = (java.util.List<File>) transferable.getTransferData(flavor);
+                            String path = files.get(0).getParent();
+                            updateUI(path+Constants.SEP);
+                            // System.out.printf(f.getParent());
+                            return; // only one file
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("Drop Err "+e);;
+                    }
+                }
+            }
+        });
+
         // Table click listener
         table1.addMouseListener(new MouseAdapter()
         {
@@ -224,26 +260,30 @@ class WTMain implements TransferInfo
                 System.out.println("cannot start audacity "+e2);
             }
         });
-        onlySoundCheck.addActionListener(e ->
-                updateTable(lastPath));
+        // Checkbox clicked
+        onlySoundCheck.addActionListener(e -> updateTable(lastPath));
+        // Path up button
+        pathUpButton.addActionListener(e ->
+        {
+            String par = new File(lastPath).getParent();
+            if (par != null)
+            {
+                if (!par.endsWith(Constants.SEP))
+                    par += Constants.SEP;
+                lastPath = par;
+                updateUI (lastPath);
+            }
+            else
+            {
+                System.out.println("no parent");
+            }
+        });
     }
-
-//    private void playWav (String filename)
-//    {
-//        if (lastClip != null)
-//        {
-//            lastClip.stop();
-//        }
-//        Media hit = new Media(new File(filename).toURI().toString());
-//        MediaPlayer mediaPlayer = new MediaPlayer(hit);
-//        lastClip = mediaPlayer;
-//        mediaPlayer.play();
-//    }
 
     private void updateTable (String path)
     {
         DefaultTableModel tab = DirLister.getFilledTableModel(path, onlySoundCheck.isSelected());
-        table1.mySetModel(tab);
+        table1.setModel2(tab);
         topLabel.setText(path);
     }
 
@@ -260,7 +300,7 @@ class WTMain implements TransferInfo
         {
             ConfigFile conf = new ConfigFile(Constants.PATH_TO_CONFIGFILE);
             conf.setAction("root", strings ->
-                    root = strings[0]);
+                    lastPath = strings[0]);
             conf.setAction("audacity", strings ->
                     audacityPath = strings[0]);
             conf.setAction("store", strings ->
@@ -273,8 +313,7 @@ class WTMain implements TransferInfo
         {
             System.out.println("config file error");
         }
-        lastPath = root;
-        updateUI(root);
+        updateUI(lastPath);
     }
 
     public static void main (String[] args)
@@ -332,6 +371,8 @@ class WTMain implements TransferInfo
         mainPanel.add(panelBottom, BorderLayout.SOUTH);
         topLabel = new JLabel();
         panel1.add(topLabel);
+        pathUpButton = new JButton ("Up");
+        panel1.add (pathUpButton);
         copyPathButton = new JButton("Copy path");
         onlySoundCheck = new JCheckBox("Only sounds");
         editButton = new JButton("CfG File");

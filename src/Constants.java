@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,6 +11,7 @@ interface Constants
     String DEFAULT_ROOT = "c:" + SEP;
 
     String[] SOUND_EXT = new String[] { "wav", "mp3", "aac", "pcm", "ogg", "au", "aiff" };
+    String[] DOTTED_SOUND_EXT = Arrays.stream(SOUND_EXT).map(e -> "."+e).toArray(String[]::new);
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 }

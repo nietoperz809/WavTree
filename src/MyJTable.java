@@ -47,7 +47,7 @@ public class MyJTable extends JXTable
         });
     }
 
-    public void mySetModel (TableModel dataModel)
+    public void setModel2 (TableModel dataModel)
     {
         setModel(dataModel);
         // Set table long comparator for size column

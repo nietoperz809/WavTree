@@ -27,7 +27,7 @@ public class SeekDialog extends JDialog implements TransferInfo
         buttonOK.addActionListener(e -> onOK());
 
         final DefaultTableModel tm = new DefaultTableModel(new Object[]{"File", "Size", "Path"}, 0);
-        table1.mySetModel(tm);
+        table1.setModel2(tm);
         Constants.executor.submit((Callable<Void>) () ->
         {
             infoText.setText ("Searching ...");
@@ -51,8 +51,7 @@ public class SeekDialog extends JDialog implements TransferInfo
 
     private void onOK ()
     {
-        // add your code here
-        dispose();
+        running.set(false);
     }
 
     public static SeekDialog create (String title, String path)
@@ -78,9 +77,9 @@ public class SeekDialog extends JDialog implements TransferInfo
             File f = arr[index];
             String name = f.getName();
             String lower = name.toLowerCase();
-            for (String s : Constants.SOUND_EXT)
+            for (String s : Constants.DOTTED_SOUND_EXT)
             {
-                if (lower.endsWith("."+s))
+                if (lower.endsWith(s))
                 {
                     tm.addRow(new Object[]
                             {
@@ -120,7 +119,7 @@ public class SeekDialog extends JDialog implements TransferInfo
         panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         panel1.add(panel2, BorderLayout.SOUTH);
         buttonOK = new JButton();
-        buttonOK.setText("OK");
+        buttonOK.setText("Stop search");
         panel2.add(buttonOK);
         infoText = new JLabel();
         panel2.add (infoText);

@@ -3,6 +3,8 @@
 File browser for audio files. Plays a file if you click on it. Currently aware of WAV,MP3,OGG
 
 Files can directly be dragged from the list into your DAW or any other app that is able to DnD.
+If a file is dragged into the tree control, then the directory where the file is located become 
+the new root dir. 
 
 The program also demonstrates the use of a JarClassLoader: www.jdotsoft.com/JarClassLoader.php
 The jar contains a lib folder that contains some other jars which are dynamically loaded.
