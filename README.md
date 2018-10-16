@@ -1,9 +1,10 @@
 # WavTree (simple tool)
 
-File browser for audio files. Plays a file if you click on it. Currently aware of WAV,MP3,OGG
+File browser for audio files. Plays a file if you click on it. Currently aware of 
+WAV, MP3, OGG, AU, AIFF, AAC, PCM
 
 Files can directly be dragged from the list into your DAW or any other app that is able to DnD.
-If a file is dragged into the tree control, then the directory where the file is located become 
+If a file is dragged into the tree control, then the directory where the file is located becomes 
 the new root dir. 
 
 The program also demonstrates the use of a JarClassLoader: www.jdotsoft.com/JarClassLoader.php
