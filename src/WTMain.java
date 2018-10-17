@@ -1,5 +1,3 @@
-import hexeditor.HexView;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -113,7 +111,7 @@ class WTMain implements TransferInfo
                 }
                 catch (IOException e2)
                 {
-                    System.out.println("cannot start audacity "+e2);
+                    Util.showException(e2);
                 }
             });
             menu.add(item);
@@ -131,7 +129,7 @@ class WTMain implements TransferInfo
                 }
                 catch (IOException e2)
                 {
-                    System.out.println("Error while copying "+e2);
+                    Util.showException(e2);
                 }
             });
             menu.add(item);
@@ -212,7 +210,7 @@ class WTMain implements TransferInfo
                     }
                     catch (Exception e)
                     {
-                        System.out.println("Drop Err "+e);;
+                        Util.showException(e);
                     }
                 }
             }
@@ -257,7 +255,7 @@ class WTMain implements TransferInfo
             }
             catch (IOException e2)
             {
-                System.out.println("cannot start audacity "+e2);
+                Util.showException(e2);
             }
         });
         // Checkbox clicked
@@ -311,7 +309,8 @@ class WTMain implements TransferInfo
         }
         catch (IOException e)
         {
-            System.out.println("config file error");
+            System.out.println("no config file");
+            //Util.showException(e);
         }
         updateUI(lastPath);
     }

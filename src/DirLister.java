@@ -34,7 +34,7 @@ class DirLister
         }
         catch (Exception e)
         {
-            System.out.println("tabModelFill fail");
+            Util.showException(e);
         }
         return new DefaultTableModel (values.toArray(new Object[][] {}),
                                         columns.toArray());
@@ -101,7 +101,7 @@ class DirLister
         }
         catch (Exception e)
         {
-            System.out.println("cannot get node entry "+e);
+            Util.showException(e);
         }
     }
 

@@ -39,8 +39,9 @@ public class MyJTable extends JXTable
                             || lower.endsWith(".aiff")
                     )
                     {
-                        WavePlayer.stop();
-                        WavePlayer.asyncPlay(path);
+                        SoundPlayer.asyncPlay(path);
+//                        WavePlayer.stop();
+//                        WavePlayer.asyncPlay(path);
                     }
                 }
             }

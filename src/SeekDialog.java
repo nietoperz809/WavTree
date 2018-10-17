@@ -22,7 +22,7 @@ public class SeekDialog extends JDialog implements TransferInfo
         setupUI();
         setTitle(title);
         setContentPane(contentPane);
-        setModal(true);
+        //setModal(true);
         getRootPane().setDefaultButton(buttonOK);
         buttonOK.addActionListener(e -> onOK());
 
@@ -71,11 +71,12 @@ public class SeekDialog extends JDialog implements TransferInfo
             return;
         }
 
+        File fil = arr[index];
+
         // for files
-        if (arr[index].isFile())
+        if (fil.isFile())
         {
-            File f = arr[index];
-            String name = f.getName();
+            String name = fil.getName();
             String lower = name.toLowerCase();
             for (String s : Constants.DOTTED_SOUND_EXT)
             {
@@ -84,8 +85,8 @@ public class SeekDialog extends JDialog implements TransferInfo
                     tm.addRow(new Object[]
                             {
                                     name,
-                                    "" + f.length(),
-                                    f.getParent()+Constants.SEP
+                                    "" + fil.length(),
+                                    fil.getParent()+Constants.SEP
                             });
                     numFiles++;
                     infoText.setText ("Searching ... "+numFiles+" found");
@@ -95,11 +96,12 @@ public class SeekDialog extends JDialog implements TransferInfo
         }
 
         // for sub-directories
-        else if (arr[index].isDirectory())
+        else if (fil.isDirectory())
         {
+            infoText.setText ("Searching in    "+fil.getAbsolutePath());
             // recursion for sub-directories
-            fillTable(arr[index].getAbsolutePath(),
-                    arr[index].listFiles(),
+            fillTable(fil.getAbsolutePath(),
+                    fil.listFiles(),
                     0, tm);
         }
 
@@ -116,13 +118,13 @@ public class SeekDialog extends JDialog implements TransferInfo
         panel1.setLayout(new BorderLayout(0, 0));
         contentPane.add(panel1, BorderLayout.CENTER);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panel2.setLayout(new BorderLayout(0, 0));
         panel1.add(panel2, BorderLayout.SOUTH);
         buttonOK = new JButton();
         buttonOK.setText("Stop search");
-        panel2.add(buttonOK);
+        panel2.add(buttonOK, BorderLayout.WEST);
         infoText = new JLabel();
-        panel2.add (infoText);
+        panel2.add (infoText, BorderLayout.CENTER);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, BorderLayout.CENTER);
         table1 = new MyJTable(this);

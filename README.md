@@ -1,7 +1,7 @@
 # WavTree (simple tool)
 
-File browser for audio files. Plays a file if you click on it. Currently aware of 
-WAV, MP3, OGG, AU, AIFF, AAC, PCM
+File browser for audio files. Plays a file if you click on it. FFMPEG is used for playback.
+FFMPEG is written in C. Only the win64 version is included.
 
 Files can directly be dragged from the list into your DAW or any other app that is able to DnD.
 If a file is dragged into the tree control, then the directory where the file is located becomes 
