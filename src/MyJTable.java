@@ -2,6 +2,7 @@ import javafx.embed.swing.JFXPanel;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.sort.TableSortController;
 
+import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,10 +12,27 @@ public class MyJTable extends JXTable
 {
     final static JFXPanel fxPanel = new JFXPanel(); // start JFX
 
+    private TransferInfo m_in;
+
+    @Override
+    public String getToolTipText (MouseEvent event)
+    {
+        int rp = rowAtPoint(event.getPoint());
+        if (rp == -1)
+            return null;
+        TableModel tm = getModel();
+        int rowNum = convertRowIndexToModel(rp);
+        String filename = (String) tm.getValueAt(rowNum, 0);
+        String path = m_in.getPath(rowNum) + filename;
+
+        return SoundPlayer.probe(path);
+    }
 
     public MyJTable (TransferInfo in)
     {
         super();
+        m_in = in;
+        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
         setDragEnabled(true);
         setTransferHandler(new FileTransferHandler(in));
 
@@ -40,8 +58,6 @@ public class MyJTable extends JXTable
                     )
                     {
                         SoundPlayer.asyncPlay(path);
-//                        WavePlayer.stop();
-//                        WavePlayer.asyncPlay(path);
                     }
                 }
             }

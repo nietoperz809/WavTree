@@ -322,4 +322,16 @@ public class HexView extends JTextArea
             sb.deleteCharAt(chardel);
         this.setText(sb.toString());
     }
+
+    /**
+     * Special class to export insertString on PlainDocument
+     * @author Administrator
+     */
+    static class PlainDoc2 extends PlainDocument
+    {
+        void insertString2 (int offs, String str, AttributeSet a) throws BadLocationException
+        {
+            super.insertString(offs, str, a);
+        }
+    }
 }

@@ -64,10 +64,16 @@ public class SeekDialog extends JDialog implements TransferInfo
 
     void fillTable (String dir, File[] arr, int index, DefaultTableModel tm)
     {
+        if (arr == null)
+        {
+            //Util.showException(new Exception("Dir access denied"));
+            return;
+        }
+
         // terminate condition
         if (index == arr.length || !running.get())
         {
-            System.out.println("leave filltable " + running);
+            //System.out.println("leave filltable " + running);
             return;
         }
 

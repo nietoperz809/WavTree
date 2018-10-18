@@ -46,25 +46,25 @@ public class Util
         return sb;
     }
     
-    private static int readHex (String in) throws Exception
-    {
-        try
-        {
-            return Integer.parseInt(in.trim(), 16);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception ("Not a hex value");
-        }
-    }
+//    private static int readHex (String in) throws Exception
+//    {
+//        try
+//        {
+//            return Integer.parseInt(in.trim(), 16);
+//        }
+//        catch (Exception ex)
+//        {
+//            throw new Exception ("Not a hex value");
+//        }
+//    }
     
-    private static int readNumber (String in) throws Exception
-    {
-        if (in.charAt(0) == '$')
-            return readHex (in.substring(1));
-        else if (in.charAt(0) == '\'' && in.charAt(2) == '\'')
-            return (in.charAt(1));
-        return Integer.parseInt(in);
-    }
+//    private static int readNumber (String in) throws Exception
+//    {
+//        if (in.charAt(0) == '$')
+//            return readHex (in.substring(1));
+//        else if (in.charAt(0) == '\'' && in.charAt(2) == '\'')
+//            return (in.charAt(1));
+//        return Integer.parseInt(in);
+//    }
 
 }
