@@ -13,6 +13,8 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -318,6 +320,15 @@ class WTMain implements TransferInfo
     public static void main (String[] args)
     {
         JFrame frame = new JFrame("WTMain");
+        frame.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing (WindowEvent e)
+            {
+                System.out.println("closing");
+                Util.killWindowsTask(Constants.WINDOWSPLAYER);
+            }
+        });
         WTMain wt = new WTMain();
 
         wt.ExecConfig();

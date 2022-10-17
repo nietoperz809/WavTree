@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+import java.util.ArrayList;
+
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -19,6 +21,51 @@ public class Util
     public static void showException (Exception ex)
     {
         showMessageDialog(null, ex, "Something's gone wrong", ERROR_MESSAGE);
+    }
+
+    public enum OS_TYPE {LINUX, WINDOWS, SOLARIS, MACOS, UNKNOWN};
+    private static String osNameMatch = System.getProperty("os.name").toLowerCase();
+
+    public static OS_TYPE getOS()
+    {
+        if(osNameMatch.contains("linux")) 
+        {
+            return OS_TYPE.LINUX;
+        }
+        if(osNameMatch.contains("windows"))
+        {
+           return OS_TYPE.WINDOWS;
+        }
+        if(osNameMatch.contains("solaris") || osNameMatch.contains("sunos"))
+        {
+           return OS_TYPE.SOLARIS;
+        }
+        if(osNameMatch.contains("mac os") || osNameMatch.contains("macos") || osNameMatch.contains("darwin"))
+        {
+            return OS_TYPE.MACOS;
+        }
+        return OS_TYPE.UNKNOWN;
+    }
+
+    public static void killWindowsTask (String name)
+    {
+        if (getOS() != OS_TYPE.WINDOWS)
+            return;
+        ArrayList<String> args = new ArrayList<>();
+        ProcessBuilder pb;
+        args.add("taskkill"); // command name
+        args.add("/F");
+        args.add("/IM");
+        args.add(name);
+        try
+        {
+            Process pro = new ProcessBuilder(args).start();
+            pro.waitFor();
+        }
+        catch (Exception e)
+        {
+            showException(e);
+        }
     }
 
     public static int getHexIndex(char c)

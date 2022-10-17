@@ -13,5 +13,7 @@ interface Constants
     String[] SOUND_EXT = new String[] { "wav", "mp3", "aac", "pcm", "ogg", "au", "aiff" };
     String[] DOTTED_SOUND_EXT = Arrays.stream(SOUND_EXT).map(e -> "."+e).toArray(String[]::new);
 
+    String WINDOWSPLAYER = "ffplay.exe";
+
     ExecutorService executor = Executors.newFixedThreadPool(10);
 }

@@ -57,7 +57,7 @@ public class MyJTable extends JXTable
                             || lower.endsWith(".aiff")
                     )
                     {
-                        SoundPlayer.asyncPlay(path);
+                        SoundPlayer.play(path);
                     }
                 }
             }
